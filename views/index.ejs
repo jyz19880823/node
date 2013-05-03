@@ -1,21 +1,9 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title><%= title %></title>
-		<link rel='stylesheet' href='/stylesheets/style.css' />
-	</head>
-	<body>
-		<% if (locals.success) { %> 
-		<div > 
-			<%= locals.success %> 
-		</div> 
-		<% } %> 
-		<% if (locals.error) { %> 
-		<div> 
-			<%= locals.error %> 
-		</div> 
-		<% } %> 
-		<h1><%= title %></h1>
-		<p>Welcome to <%= title %></p>
-	</body>
-</html>
+<%- include header %>
+
+<% locals.posts.forEach(function(post,index){ %>
+<div class="art">
+	<p><a href="/post/<%= post.title%>"><%= post.title %></a> <span style="color:gray"><%= post.user %></span>
+	<p><%= post.post %></p>
+	</div>
+<% })%>
+		<%- include footer %>

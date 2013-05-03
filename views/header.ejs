@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+	</head>
+	<body>
+	<p><a href="/login">Login Now</a> | <a href="/reg">Register</a> | <a href="/logout">Logout</a> | <a href=""><%= user.name%></a></p>
+		<% if (locals.success) { %> 
+		<div > 
+			<%= locals.success %> 
+		</div> 
+		<% } %> 
+		<% if (locals.error) { %> 
+		<div> 
+			<%= locals.error %> 
+		</div> 
+		<% } %> 

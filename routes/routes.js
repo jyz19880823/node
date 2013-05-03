@@ -1,11 +1,34 @@
 var crypto=require("crypto"),
+Post=require('../model/post.js')
 User=require('../model/user.js')
 module.exports=function(app,routes){
 	app.get('/',function(req,res){
-			res.render("index",{title:"this is a test"})
+			Post.get(null,function(err,posts){
+					if(err){
+						posts=[];
+					}
+					res.render('index',{
+							title:'this is title',
+							user:req.session.user || "",
+							posts:posts,
+							success:req.flash('success').toString()
+						})
+				})
+		})
+	app.get('/post/:id',function(req,res){
+			Post.findOne(req.params.id,function(err,post){
+					res.render("post",{
+							user:req.session.user || "",
+							title:post.title,
+						    post:post.post
+						})
+				})
 		})
 	app.get('/login',function(req,res){
-			res.render("login",{name:"latpaw"})
+			res.render("login",{
+					user:req.session.user||"",
+					title:"login"
+					})
 		})
 	app.get('/reg', function(req,res){
 			res.render('reg',{
@@ -72,4 +95,50 @@ module.exports=function(app,routes){
 					res.redirect('/');
 				});
 		});
+	app.get('/logout', checkLogin);
+	app.get('/logout', function(req, res){
+			req.session.user = null;
+			req.flash('success','登出成功');
+			res.redirect('/');
+		});
+
+	app.get('/post', checkLogin);
+	app.get('/post', function(req, res){
+			res.render('posts',{
+					title:'post a post',
+					user:req.session.user || "",
+					success:req.flash('success').toString(),
+					error:req.flash('error').toString()
+				})
+		});
+	app.post('/post', checkLogin);
+	app.post('/post', function(req, res){
+			var currentUser = req.session.user;
+			post=new Post(currentUser.name,req.body.title,req.body.post)
+			post.save(function(err){
+					if(err){
+						req.flash('error',err)
+						return res.redirect('/')
+					}
+					req.flash('success','Sueccessed!')
+					res.redirect('/')
+				})
+		});
+};
+
+function checkLogin(req, res, next){
+	if(!req.session.user){
+		req.flash('error','未登录'); 
+		return res.redirect('/login');
+	}
+	next();
+}
+
+
+function checkNotLogin(req,res,next){
+	if(req.session.user){
+		req.flash('error','已登录'); 
+		return res.redirect('/');
+	}
+	next();
 }
