@@ -5,7 +5,11 @@
 		<link rel='stylesheet' href='/stylesheets/style.css' />
 	</head>
 	<body>
-	<p id="top"><% if(!login){%><a href="/login">Login Now</a> | <a href="/reg">Register</a> | <% }else{%><a href="/logout">Logout</a> | <a href=""><%= user.name%></a><% }%></p>
+		<p id="topleft">
+			<a href="/">首页</a> | <a href="/post/new">新建文章</a>
+		</p>
+	<p id="topright"><% if(!login){%><a href="/login">Login Now</a> | <a href="/reg">Register</a> | <% }else{%><a href="/logout">Logout</a> | <a href=""><%= user.name%></a><% }%></p>
+	<section id="body">
 		<% if (locals.success) { %> 
 		<div id="success"> 
 			<%= locals.success %> 

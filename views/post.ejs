@@ -1,22 +1,48 @@
 <%- include header %>
 <h1><%= title %></h1>
-<span><%= name %> at <%= time %></span>
-<p style="width:50%"><%= post %></p>
+<span class="gray"><%= name %> at <%= time %></span>
+<p ><%= post %></p>
 <a href="<%= title %>/edit">Edit</a> | <a href="<%= title%>/delete">Delete</a>
-<section>
+<section id="comments">
 Comments:<br/>
    <% comments.forEach(function(comm,index){%>
 <p class="comment">
    	  <%= comm.name %> say : "
 	  <%= comm.content%> ";
+	  <a href="/post/<%=title%>/comment/<%=comm.id%>/delete">X</a>
 	</p>
 	<br>
    <%})%>
 </section>
 <form action="/post/<%= title %>/comment/add" method="post">
-	<h6>Add a comment</h6>
-	<input type="text" name="name" placeholder="name"> <br>
-	<input type="text" name="content" placeholder="comment content"><br>
-	<input type="submit" value="submit">
+	<input type="text" name="name" placeholder="Your name for new comment"> <br><br>
+	<input type="text" name="content" placeholder="The comment content"><br><br>
+	<input type="submit" value="submit" id="xhr">
 </form>
+<script type="text/javascript">
+var xhr = document.getElementById("xhr")
+var form = document.forms[0]
+var comm = document.getElementById("comments")
+xhr.onclick=function(e){
+	e.preventDefault();
+	var url = form.action;
+	var message = "name="+form.name.value+"&content="+form.content.value
+    var req = new XMLHttpRequest()
+	if(req ){
+			req.open("POST",url,true)
+		req.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset:UTF-8");
+			req.onreadystatechange=function(){
+				console.log(req.readyState+"asd"+req.status)
+			      if(req.readyState==4 &&req.status==200 ){
+							var p = document.createElement("p")
+							var commid = req.responseText
+							p.className='comment'
+							p.innerHTML=form.name.value+" say : "+ form.content.value +'<a href="/post/asd'+'/comment/'+commid+'/delete">X</a>'
+							comm.appendChild(p)
+					  }	
+				}
+			req.send(message)
+		}
+	}
+</script>
 <%- include footer %>

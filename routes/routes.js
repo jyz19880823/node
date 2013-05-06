@@ -163,8 +163,15 @@ module.exports=function(app,routes){
 				name:req.body.name,
 				content:req.body.content
 			}
-			Post.add_comment(req.params.id,comment)
-			res.redirect('/post/'+req.params.id)
+			Post.add_comment(req.params.id,comment,function(commid){
+					res.send(200,""+commid)
+				})
+		})
+	app.get('/post/:id/comment/:comm_id/delete',function(req,res){
+			Post.remove_comment(req.params.id,req.params.comm_id,req,res,function(req,res){
+					res.redirect('/post/'+req.params.id)
+				})
+			/*res.redirect('/post/'+req.params.id)*/
 		})
 };
 

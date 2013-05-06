@@ -87,25 +87,15 @@ Post.get = function get(username, callback) {
 						if(id){
 							query.title=id;
 						}
+						/*collection.findOne({"title":id},function(err,doc){console.log(doc.comments.length)})*/
 						collection.findOne({"title":id},function(err,doc){
-								callback(null,doc)
 								mongodb.close()
+								callback(null,doc)
 							})
-						/*callback(null,collection.find(query))*/
-						/*mongodb.close()*/
 					})
 			})
 	}
 
-	/*Post.remove = function(id,callback){*/
-	/*mongodb.open(function(err,db){*/
-	/*db.collection("posts",function(){*/
-	/*var query={}*/
-	/*if(id){query.title=id}*/
-	/*collection.*/
-	/*})*/
-	/*})*/
-	/*}*/
 	Post.update=function(id,callback){
 		mongodb.open(function(err,db){
 				db.collection("posts",function(err,collection){
@@ -123,11 +113,37 @@ Post.get = function get(username, callback) {
 			})
 	
 	}
-	Post.add_comment=function(id,comment){
+	Post.add_comment=function(id,comment,callback){
 		mongodb.open(function(err,db){
 				db.collection("posts",function(err,collection){
-						collection.update({title:id},{$push:{comments:comment}})
-						mongodb.close()
+						collection.findOne({"title":id},function(err,doc){
+								if(doc.comments){
+								var num = doc.comments.length
+								if(doc.comments[num-1]){
+								commid = doc.comments[num-1].id
+							}else{
+								commid = 0
+							}
+						}
+						else{
+						commid=0
+						}
+								comment.id=commid+1
+						collection.update({title:id},{$push:{comments:comment}},function(){
+								mongodb.close()
+								callback(comment.id)
+							})
+							})
 					})
 			})
+	}
+	Post.remove_comment=function(id,commid,req,res,callback){
+		mongodb.open(function(err,db){
+				db.collection("posts",function(err,collection){
+						collection.update({title:id},{$pull:{comments:{id:parseInt(commid)}}},function(err){
+								mongodb.close()
+							})
+						callback(req,res)
+							})
+					})
 	}
