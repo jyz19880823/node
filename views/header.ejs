@@ -5,14 +5,14 @@
 		<link rel='stylesheet' href='/stylesheets/style.css' />
 	</head>
 	<body>
-	<p><a href="/login">Login Now</a> | <a href="/reg">Register</a> | <a href="/logout">Logout</a> | <a href=""><%= user.name%></a></p>
+	<p id="top"><% if(!login){%><a href="/login">Login Now</a> | <a href="/reg">Register</a> | <% }else{%><a href="/logout">Logout</a> | <a href=""><%= user.name%></a><% }%></p>
 		<% if (locals.success) { %> 
-		<div > 
+		<div id="success"> 
 			<%= locals.success %> 
 		</div> 
 		<% } %> 
 		<% if (locals.error) { %> 
-		<div> 
+		<div id="error"> 
 			<%= locals.error %> 
 		</div> 
 		<% } %> 

@@ -96,3 +96,38 @@ Post.get = function get(username, callback) {
 					})
 			})
 	}
+
+	/*Post.remove = function(id,callback){*/
+	/*mongodb.open(function(err,db){*/
+	/*db.collection("posts",function(){*/
+	/*var query={}*/
+	/*if(id){query.title=id}*/
+	/*collection.*/
+	/*})*/
+	/*})*/
+	/*}*/
+	Post.update=function(id,callback){
+		mongodb.open(function(err,db){
+				db.collection("posts",function(err,collection){
+						collection.update({title:id},{$set:callback})
+						mongodb.close()
+					})
+			})
+	
+	}
+	Post.remove=function(id,callback){
+		mongodb.open(function(err,db){
+				db.collection("posts",function(err,collection){
+						collection.remove({title:id},function(){mongodb.close()})
+					})
+			})
+	
+	}
+	Post.add_comment=function(id,comment){
+		mongodb.open(function(err,db){
+				db.collection("posts",function(err,collection){
+						collection.update({title:id},{$push:{comments:comment}})
+						mongodb.close()
+					})
+			})
+	}

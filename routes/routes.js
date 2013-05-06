@@ -2,6 +2,13 @@ var crypto=require("crypto"),
 Post=require('../model/post.js')
 User=require('../model/user.js')
 module.exports=function(app,routes){
+	app.get("*",function(req,res,next){
+			if(req.session.user){
+				login=true
+			}else{login=false}
+			/*if(res.status(404).send("not found"))*/
+			next()
+		})
 	app.get('/',function(req,res){
 			Post.get(null,function(err,posts){
 					if(err){
@@ -15,11 +22,45 @@ module.exports=function(app,routes){
 						})
 				})
 		})
+	app.get('/post/new', function(req, res){
+			res.render('posts',{
+					title:'post a post',
+					user:req.session.user || "",
+					success:req.flash('success').toString(),
+					error:req.flash('error').toString()
+				})
+		});
+	app.post('/post/new', function(req, res){
+			var currentUser = req.session.user;
+			post=new Post(currentUser.name,req.body.title,req.body.post)
+			post.save(function(err){
+					if(err){
+						req.flash('error',err)
+						return res.redirect('/')
+					}
+					req.flash('success','Sueccessed!')
+					res.redirect('/post/'+req.body.title)
+				})
+		});
+	app.get('/post/:id/edit',function(req,res){
+			Post.findOne(req.params.id,function(err,post){
+					res.render("post_edit",{
+							user:req.session.user || "",
+							title:post.title,
+							name:post.user,
+							time:post.time,
+						    post:post.post
+						})
+				})
+		})
 	app.get('/post/:id',function(req,res){
 			Post.findOne(req.params.id,function(err,post){
 					res.render("post",{
 							user:req.session.user || "",
 							title:post.title,
+							name:post.user,
+							time:post.time,
+							comments:post.comments||[],
 						    post:post.post
 						})
 				})
@@ -103,27 +144,28 @@ module.exports=function(app,routes){
 		});
 
 	app.get('/post', checkLogin);
-	app.get('/post', function(req, res){
-			res.render('posts',{
-					title:'post a post',
-					user:req.session.user || "",
-					success:req.flash('success').toString(),
-					error:req.flash('error').toString()
-				})
-		});
 	app.post('/post', checkLogin);
-	app.post('/post', function(req, res){
+	app.post('/post/:id/edit', function(req, res){
 			var currentUser = req.session.user;
-			post=new Post(currentUser.name,req.body.title,req.body.post)
-			post.save(function(err){
-					if(err){
-						req.flash('error',err)
-						return res.redirect('/')
-					}
-					req.flash('success','Sueccessed!')
-					res.redirect('/')
-				})
+			var post = {
+				post:req.body.post,
+				title:req.body.title
+			}
+			Post.update(req.params.id,post)
+			res.redirect('/post/'+req.params.id)
 		});
+	app.get('/post/:id/delete',function(req,res){
+			Post.remove(req.params.id)
+			res.redirect('/')
+		})
+	app.post('/post/:id/comment/add',function(req,res){
+			var comment= {
+				name:req.body.name,
+				content:req.body.content
+			}
+			Post.add_comment(req.params.id,comment)
+			res.redirect('/post/'+req.params.id)
+		})
 };
 
 function checkLogin(req, res, next){
