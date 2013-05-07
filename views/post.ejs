@@ -1,17 +1,16 @@
 <%- include header %>
 <h1><%= title %></h1>
-<span class="gray"><%= name %> at <%= time %></span>
-<p ><%= post %></p>
-<a href="<%= title %>/edit">Edit</a> | <a href="<%= title%>/delete">Delete</a>
+<p class="gray"><%= name %> at <%= time %></p>
+<div ><%= post %></div>
+<p><a href="<%= title %>/edit">Edit</a> | <a href="<%= title%>/delete">Delete</a></p>
 <section id="comments">
 Comments:<br/>
    <% comments.forEach(function(comm,index){%>
 <p class="comment">
    	  <%= comm.name %> say : "
 	  <%= comm.content%> ";
-	  <a href="/post/<%=title%>/comment/<%=comm.id%>/delete">X</a>
+	  <a href="/post/<%=title%>/comment/<%=comm.id%>/delete" class="del">X</a>
 	</p>
-	<br>
    <%})%>
 </section>
 <form action="/post/<%= title %>/comment/add" method="post">
@@ -37,12 +36,33 @@ xhr.onclick=function(e){
 							var p = document.createElement("p")
 							var commid = req.responseText
 							p.className='comment'
-							p.innerHTML=form.name.value+" say : "+ form.content.value +'<a href="/post/asd'+'/comment/'+commid+'/delete">X</a>'
+							p.innerHTML=form.name.value+' say : "'+ form.content.value +'"; <a class="del" href="/post/'+"<%= title %>"+'/comment/'+commid+'/delete">X</a>'
 							comm.appendChild(p)
+							p.querySelector(".del").onclick=delete_comm
 					  }	
 				}
 			req.send(message)
 		}
+	}
+var dels=document.querySelectorAll(".del");
+for(i in dels){
+	dels[i].onclick=delete_comm
+}
+
+function delete_comm(e){
+		e.preventDefault();
+		var del_url=this.href
+		var that = this
+		var xhrget = new XMLHttpRequest()
+			if(xhrget){
+				xhrget.open("GET",del_url,true)
+			    xhrget.onreadystatechange=function(){
+						if(xhrget.readyState==4 && xhrget.status==200){
+							that.parentNode.parentNode.removeChild(that.parentNode)
+						}
+					}
+				xhrget.send(null)
+			}
 	}
 </script>
 <%- include footer %>

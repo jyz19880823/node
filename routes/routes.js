@@ -1,6 +1,7 @@
 var crypto=require("crypto"),
 Post=require('../model/post.js')
 User=require('../model/user.js')
+var md = require("node-markdown").Markdown
 module.exports=function(app,routes){
 	app.get("*",function(req,res,next){
 			if(req.session.user){
@@ -22,8 +23,9 @@ module.exports=function(app,routes){
 						})
 				})
 		})
+	app.get('/post/new',checkLogin)
 	app.get('/post/new', function(req, res){
-			res.render('posts',{
+			res.render('new',{
 					title:'post a post',
 					user:req.session.user || "",
 					success:req.flash('success').toString(),
@@ -61,7 +63,7 @@ module.exports=function(app,routes){
 							name:post.user,
 							time:post.time,
 							comments:post.comments||[],
-						    post:post.post
+							post:post.post
 						})
 				})
 		})
@@ -80,12 +82,6 @@ module.exports=function(app,routes){
 				}); 
 		});
 	app.post('/reg', function(req,res){
-			/*if(req.body['password-repeat'] != req.body['password']){*/
-			/*req.flash('error','两次输入的口令不一致'); */
-			/*return res.redirect('/reg');*/
-			/*}*/
-			/*var md5 = crypto.createHash('md5');*/
-			/*var password = md5.update(req.body.password).digest('base64');*/
 			var password=req.body.password;
 			var newUser = new User({
 					name: req.body.username,
@@ -169,7 +165,7 @@ module.exports=function(app,routes){
 		})
 	app.get('/post/:id/comment/:comm_id/delete',function(req,res){
 			Post.remove_comment(req.params.id,req.params.comm_id,req,res,function(req,res){
-					res.redirect('/post/'+req.params.id)
+					res.send(200)
 				})
 			/*res.redirect('/post/'+req.params.id)*/
 		})
