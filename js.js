@@ -14,10 +14,11 @@ var fs = require('fs')
 var emitter = require('events').EventEmitter;
 
 var options={
-	host:'www.latpaw.me',
+	host:process.argv[2],
 	port:'80'
 }
-var uris = ["www.latpaw.me"]
+var uris = []
+uris[0] = options.host
 
 var start =0, //开始的位置
 end = 1;  //结束的位置
