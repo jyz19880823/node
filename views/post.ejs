@@ -2,7 +2,7 @@
 <h1><%= title %></h1>
 <p class="gray"><%= name %> at <%= time %></p>
 <div ><%= post %></div>
-<p><a href="<%= title %>/edit">Edit</a> | <a href="<%= title%>/delete">Delete</a></p>
+<p><% if(user){ %><a href="<%= title %>/edit">Edit</a> | <a href="<%= title%>/delete">Delete</a><% }%></p>
 <section id="comments">
 Comments:<br/>
    <% comments.forEach(function(comm,index){%>
